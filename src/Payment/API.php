@@ -36,10 +36,11 @@ class API extends AbstractAPI
      * @var Merchant
      */
     protected $merchant;
+    protected $api_prepare_order;
 
     // api
     const API_PAY_ORDER = 'https://api.mch.weixin.qq.com/pay/micropay';
-    const API_PREPARE_ORDER = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+//    const API_PREPARE_ORDER = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
     const API_QUERY = 'https://api.mch.weixin.qq.com/pay/orderquery';
     const API_CLOSE = 'https://api.mch.weixin.qq.com/pay/closeorder';
     const API_REVERSE = 'https://api.mch.weixin.qq.com/secapi/pay/reverse';
@@ -70,6 +71,7 @@ class API extends AbstractAPI
     public function __construct(Merchant $merchant)
     {
         $this->merchant = $merchant;
+        $this->api_prepare_order = env('WX_API_PREPARE_ORDER', 'https://api.mch.weixin.qq.com/pay/unifiedorder');
     }
 
     /**
@@ -96,7 +98,7 @@ class API extends AbstractAPI
         $order->notify_url = $order->get('notify_url', $this->merchant->notify_url);
         $order->spbill_create_ip = ($order->trade_type === Order::NATIVE) ? get_server_ip() : get_client_ip();
 
-        return $this->request(self::API_PREPARE_ORDER, $order->all());
+        return $this->request($this->api_prepare_order, $order->all());
     }
 
     /**
